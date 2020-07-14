@@ -1,0 +1,97 @@
+---
+title: "*mlr3* package introduction"
+author: "Hans W. Borchers"
+date: "July 2020"
+output:
+  html_document:
+    css: "mlr3.css"
+    keep_md: true
+    toc: true
+    toc_float:
+      collapsed: false  
+---
+
+
+
+## Resources
+
+* Package website: https://mlr3.mlr-org.com
+* Github repository: https://github.com/mlr-org/mlr3
+* Bookdown page: https://mlr3book.mlr-org.com
+* Case studies: https://mlr3gallery.mlr-org.com
+
+* Talks and slides: https://github.com/mlr-org/mlr-outreach
+* Blog posts: https://mlr-org.com/
+* Cheat sheets: https://cheatsheets.mlr-org.com/
+* Reference Manual: https://mlr3.mlr-org.com/reference/
+
+
+## Summary
+
+Package *mlr3* is a rewrite of the former package and framework *mlr*. The summary on the homepage says:
+
+> "The R package *mlr3* and its associated ecosystem of extension packages implements a powerful, object-oriented and extensible framework for machine learning in R.
+> 
+> "It provides a unified interface to many learning algorithms available on CRAN, augmenting them with model-agnostic general-purpose functionality that is needed in every ML project,
+> 
+> "for example train-test-evaluation, resampling, preprocessing, hyperparameter tuning, nested resampling, and visualization of results from ML experiments."
+
+
+## *mlr3* package family
+
+    mlr3            Machine Learning in R - next generation
+    mlr3measures    Performance measures
+    mlr3misc        Helper functions
+    mlr3data        Collection of ML data sets
+    paradox         Descriptions for parameters
+
+    mlr3verse       Install and load the 'mlr3' package family
+    mlr3filters     Filter based feature selection
+    mlr3learners    Recommended learners
+    mlr3pipelines   Preprocessing operators and pipelines
+    mlr3tuning      hyperparameter tuning
+    mlr3viz         Visualizations (with 'ggplot')
+
+    mlr3proba       Probabilistic supervised learning
+    mlr3shiny       Machine Learning in Shiny
+    mlr3db          Database backend
+
+
+## Installing *mlr3*
+
+Install the official release from CRAN
+```r
+install.packages("mlr3")
+```
+or install the development version from Github
+```r
+remotes::install_github("mlr-org/mlr3")
+```
+This imports resp. suggests about 20 other (non-'mlr3') packages and may take a moment.
+
+The easiest way to install *mlr3* and its extension packages all at once is by installing the "mlr3 universe".
+
+```r
+install.packages("mlr3verse")
+```
+
+
+## Loading *mlr3*
+
+Of course, *mlr3* can be loaded with the usual `library("mlr3")` command, but it makes sense to use the more encompassing
+```r
+library("mlr3verse")
+```
+```
+Loading required package: mlr3
+Registered S3 method overwritten by 'data.table':
+  method           from
+  print.data.table     
+Loading required package: mlr3filters
+Loading required package: mlr3learners
+Loading required package: mlr3pipelines
+Loading required package: mlr3tuning
+Loading required package: mlr3viz
+Loading required package: paradox
+```
+which loads some of the core *mlr3* packages as well.
