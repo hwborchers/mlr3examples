@@ -1,18 +1,3 @@
----
-title: "*mlr3* package introduction"
-author: "Hans W. Borchers"
-date: "July 2020"
-output:
-  html_document:
-    css: "mlr3.css"
-    keep_md: true
-    toc: true
-    toc_float:
-      collapsed: false  
----
-
-
-
 ## Resources
 
 * Package website: https://mlr3.mlr-org.com
