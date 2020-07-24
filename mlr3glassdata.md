@@ -8,7 +8,6 @@ library(mlr3verse, quietly = TRUE)
 
 ## The 'glass' dataset
 
-
 ```r
 Glass <- RWeka::read.arff("glass.arff")
 str(Glass)
@@ -27,14 +26,6 @@ str(Glass)
 ##  $ Fe  : num  0 0 0 0 0.24 0.22 0 0 0.05 0.28 ...
 ##  $ Type: Factor w/ 7 levels "build wind float",..: 1 3 1 6 2 2 3 1 7 2 ...
 ```
-
-
-```r
-barplot(table(Glass$Type))
-grid()
-```
-
-![](mlr3glass_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
 
 ## Logistic regression
 
@@ -236,6 +227,6 @@ predicts$score(msrs(c("classif.acc", "classif.ce")))
 ##         0.9         0.1
 ```
 
-The accuracy is 80% for Random Forrest while it was less than 50 % for a logistic regression.
+The accuracy is 90% for Random Forrest while it was less than 50 % for a logistic regression.
 
 Of course, calculating the accuracy from the test set is not correct, we need a more reliable approach.
