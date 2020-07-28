@@ -1,10 +1,3 @@
----
-title: "*mlr3* 'glass data' Example"
-author: "Hans W. Borchers"
-date: "July 2020"
----
-
-
 
 *Remark*: Loading *mlr3* alone will lead to an error, because the learners are not available. A simple solution is to load *mlr3verse* which will load all necessary basic packages of the 'mlr3' family.
 
