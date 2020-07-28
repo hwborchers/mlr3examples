@@ -11,7 +11,7 @@ date: "July 2020"
 * Github repository: https://github.com/mlr-org/mlr3
 * Bookdown page: https://mlr3book.mlr-org.com
 * Case studies: https://mlr3gallery.mlr-org.com
-<p></p>
+
 * Talks and slides: https://github.com/mlr-org/mlr-outreach
 * Blog posts: https://mlr-org.com/
 * Cheat sheets: https://cheatsheets.mlr-org.com/
