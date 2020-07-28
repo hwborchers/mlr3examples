@@ -1,3 +1,11 @@
+---
+title: "*mlr3* 'glass data' Example"
+author: "Hans W. Borchers"
+date: "July 2020"
+---
+
+
+
 *Remark*: Loading *mlr3* alone will lead to an error, because the learners are not available. A simple solution is to load *mlr3verse* which will load all necessary basic packages of the 'mlr3' family.
 
 
@@ -5,8 +13,17 @@
 library(mlr3verse, quietly = TRUE)
 ```
 
+```
+## Warning: package 'mlr3verse' was built under R version 4.0.2
+```
+
+```
+## Warning: package 'paradox' was built under R version 4.0.2
+```
+
 
 ## The 'glass' dataset
+
 
 ```r
 Glass <- RWeka::read.arff("glass.arff")
@@ -26,6 +43,14 @@ str(Glass)
 ##  $ Fe  : num  0 0 0 0 0.24 0.22 0 0 0.05 0.28 ...
 ##  $ Type: Factor w/ 7 levels "build wind float",..: 1 3 1 6 2 2 3 1 7 2 ...
 ```
+
+
+```r
+barplot(table(Glass$Type))
+grid()
+```
+
+![](3_GlassData_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
 
 ## Logistic regression
 
@@ -93,13 +118,13 @@ learner$model
 ## 
 ## Coefficients:
 ## (Intercept)           Al           Ba           Ca           Fe            K  
-##     793.184       -2.466       -5.598       -4.891        1.551       -5.148  
+##     556.644       -1.450       -5.970       -5.048        2.180       -4.742  
 ##          Mg           Na           RI           Si  
-##      -6.834       -4.014     -164.787       -5.750  
+##      -6.915       -4.208       -3.916       -5.820  
 ## 
 ## Degrees of Freedom: 193 Total (i.e. Null);  184 Residual
-## Null Deviance:	    246 
-## Residual Deviance: 162.9 	AIC: 182.9
+## Null Deviance:	    241.6 
+## Residual Deviance: 156.2 	AIC: 176.2
 ```
 
 The output will depend on the learner, actually it simply displays what the chosen learner returns.
@@ -118,15 +143,28 @@ predicts
 ```
 ## <PredictionClassif> for 20 observations:
 ##     row_id                truth             response
-##        158           containers build wind non-float
-##        101     build wind float build wind non-float
-##        177     build wind float build wind non-float
+##         42 build wind non-float     build wind float
+##         79     vehic wind float     build wind float
+##          7     vehic wind float     build wind float
 ## ---                                                 
-##        213 build wind non-float build wind non-float
-##        214            tableware build wind non-float
-##        212 build wind non-float build wind non-float
+##          1     build wind float     build wind float
+##         29 build wind non-float build wind non-float
+##        192     build wind float build wind non-float
 ```
 
+It is possible to generate prediction probabilities. We need to tell the learner to include those probobilities.
+
+```r
+learner <- lrn("classif.log_reg", predict_type = "prob")  # "response"
+learner$train(task, row_ids = itrain)
+predicts <- learner$predict(task, row_ids = itest)
+head(predicts)
+```
+```
+Error in dimnames(x) <- dn : 
+  length of 'dimnames' [2] not equal to array extent
+```
+TODO: Find out what is causing this error.
 
 ### Accuracy
 
@@ -140,8 +178,31 @@ a
 
 ```
 ## classif.acc  classif.ce 
-##        0.55        0.45
+##        0.35        0.65
 ```
+
+All possible accuracy measures will be displayed with
+
+```r
+# as.data.table(mlr_measures)
+mlr_measures
+```
+
+```
+## <DictionaryMeasure> with 53 stored values
+## Keys: classif.acc, classif.auc, classif.bacc, classif.bbrier,
+##   classif.ce, classif.costs, classif.dor, classif.fbeta, classif.fdr,
+##   classif.fn, classif.fnr, classif.fomr, classif.fp, classif.fpr,
+##   classif.logloss, classif.mbrier, classif.mcc, classif.npv,
+##   classif.ppv, classif.precision, classif.recall, classif.sensitivity,
+##   classif.specificity, classif.tn, classif.tnr, classif.tp,
+##   classif.tpr, debug, oob_error, regr.bias, regr.ktau, regr.mae,
+##   regr.mape, regr.maxae, regr.medae, regr.medse, regr.mse, regr.msle,
+##   regr.pbias, regr.rae, regr.rmse, regr.rmsle, regr.rrse, regr.rse,
+##   regr.rsq, regr.sae, regr.smape, regr.srho, regr.sse,
+##   selected_features, time_both, time_predict, time_train
+```
+
 
 The confusion matrix is returned from
 
@@ -154,8 +215,8 @@ print(confusion_matrix)
 ```
 ##                       truth
 ## response               build wind float build wind non-float vehic wind float
-##   build wind float                    2                    0                0
-##   build wind non-float                4                    9                1
+##   build wind float                    6                    1                2
+##   build wind non-float                3                    1                0
 ##   vehic wind float                    0                    0                0
 ##   vehic wind non-float                0                    0                0
 ##   containers                          0                    0                0
@@ -164,7 +225,7 @@ print(confusion_matrix)
 ##                       truth
 ## response               vehic wind non-float containers tableware headlamps
 ##   build wind float                        0          0         0         0
-##   build wind non-float                    0          2         2         0
+##   build wind non-float                    0          2         1         4
 ##   vehic wind float                        0          0         0         0
 ##   vehic wind non-float                    0          0         0         0
 ##   containers                              0          0         0         0
@@ -211,7 +272,7 @@ learner$model
 ## Target node size:                 1 
 ## Variable importance mode:         none 
 ## Splitrule:                        gini 
-## OOB prediction error:             22.68 %
+## OOB prediction error:             20.10 %
 ```
 
 ```r
@@ -224,9 +285,9 @@ predicts$score(msrs(c("classif.acc", "classif.ce")))
 
 ```
 ## classif.acc  classif.ce 
-##         0.9         0.1
+##         0.8         0.2
 ```
 
-The accuracy is 90% for Random Forrest while it was less than 50 % for a logistic regression.
+The accuracy is 80% for Random Forrest while it was less than 50 % for a logistic regression.
 
 Of course, calculating the accuracy from the test set is not correct, we need a more reliable approach.
