@@ -1,26 +1,4 @@
----
-title: "Preparing Data with mlr3"
-author: "Hans W. Borchers"
-date: "July 2020"
-output:
-  html_document:
-    css: "mlr3.css"
-    keep_md: true
-    toc: true
-    toc_float:
-      collapsed: false
----
-
-
-
-
-```
-## Warning: package 'mlr3verse' was built under R version 4.0.2
-```
-
-```
-## Warning: package 'paradox' was built under R version 4.0.2
-```
+## The Task and the Data
 
 Again we define our data and task as 
 
@@ -110,6 +88,9 @@ summary(as.data.table(mytask))
 ## 
 ```
 
+
+## Selecting and Filtering
+
 We can select (or filter) the data, even with the intention to define a new task to work on.
 
 ```r
@@ -142,11 +123,11 @@ Note that this changes the original task (in place?).
 
 We can also extend the data with the `cbind` and `rbind` methods, adding columns or rows to it.
 
+
+## Plotting Data and Tasks
+
 There are several plotting functions associated with 'mlr3', the simplest one is `autoplot`:
 
 ```r
 autoplot(mytask)
 ```
-
-![](4_Preparing_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
-
