@@ -13,3 +13,5 @@ of Machine Learning; how can 'mlr3' be used, pros and cons, applying
 it to example data, what else is needed, etc.
 
 ## Presentations:
+
+* [Introduction](http://htmlpreview.github.io/?https://github.com/hwborchers/mlr3examples/blob/master/1_Introduction.html)
