@@ -14,4 +14,8 @@ it to example data, what else is needed, etc.
 
 ## Presentations:
 
-* [Introduction](http://htmlpreview.github.io/?https://github.com/hwborchers/mlr3examples/blob/master/1_Introduction.html)
+* [1. Introduction](http://htmlpreview.github.io/?https://github.com/hwborchers/mlr3examples/blob/master/1_Introduction.html)
+* [2. Learning](http://htmlpreview.github.io/?https://github.com/hwborchers/mlr3examples/blob/master/2_Learning.html)
+* [3. Example](http://htmlpreview.github.io/?https://github.com/hwborchers/mlr3examples/blob/master/3_Learning.html)
+* [4. Preparing](http://htmlpreview.github.io/?https://github.com/hwborchers/mlr3examples/blob/master/4_Preparing.html)
+* [5. Testing](http://htmlpreview.github.io/?https://github.com/hwborchers/mlr3examples/blob/master/5_Testing.html)
