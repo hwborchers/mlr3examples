@@ -22,3 +22,6 @@ it to example data, what else is needed, etc.
 * [6. Tuning](http://htmlpreview.github.io/?https://github.com/hwborchers/mlr3examples/blob/master/6_Tuning.html)
 * Pipelining -- *tbd.*
 * Visualization -- *tbd.*
+
+For comparison we have added an application of the *RandomForest* package to the 'glass' data:  
+[RandomForest Test](http://htmlpreview.github.io/?https://github.com/hwborchers/mlr3examples/blob/master/RandomForestTest.html)
