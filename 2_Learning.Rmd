@@ -11,33 +11,23 @@ output:
       collapsed: false  
 ---
 
-
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
 ## Available learners
 
 The *mlr3learners* package provides those essential learners for *mlr3* that are maintained by the 'mlr-org' team.
 
-
-```r
+```{r}
 library("mlr3verse", quietly = TRUE)
 # library("mlr3learners")
 ```
 The command `mlr_learners` mentioned in the *mlr3* book is a dictionary of all learners in the `mlr3learners` package.
 
-
-```r
+```{r}
 # as.data.table(mlr_learners)
 mlr_learners
-```
-
-```
-## <DictionaryLearner> with 24 stored values
-## Keys: classif.cv_glmnet, classif.debug, classif.featureless,
-##   classif.glmnet, classif.kknn, classif.lda, classif.log_reg,
-##   classif.multinom, classif.naive_bayes, classif.qda, classif.ranger,
-##   classif.rpart, classif.svm, classif.xgboost, regr.cv_glmnet,
-##   regr.featureless, regr.glmnet, regr.kknn, regr.km, regr.lm,
-##   regr.ranger, regr.rpart, regr.svm, regr.xgboost
 ```
 
 

@@ -1,0 +1,91 @@
+---
+title: "Testing and Resampling"
+author: "Hans W. Borchers"
+date: "July 2020"
+output:
+  html_document:
+    css: "mlr3.css"
+    keep_md: true
+    toc: true
+    toc_float:
+      collapsed: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r echo=FALSE}
+library(mlr3verse, quietly = TRUE)
+```
+
+## Data
+
+We will look at how the 'mlr3' package family supports testing of learners. We will use the same data as before.
+```{r}
+Glass <- RWeka::read.arff("glass.arff")
+dim(Glass)
+```
+
+The task, as defined before, will also be needed.
+```{r}
+task <- TaskClassif$new(id = "glass",
+                        backend = Glass, target = "Type")
+```
+
+
+## Resampling
+
+*Resampling* is a method to create training and test splits of the data. 'mlr3' supports cross-validation, leave-one-out, bootstrap, and hold-out methods.
+
+To see all resampling methods available in the base 'mlr3' family, display the `mlr_resamplings` dictionary:
+
+```{r}
+as.data.table(mlr_resamplings)
+```
+
+We will try out the k-fold cross-validation, here given as "cv", doing it k times (with $k^2 models to generate). In the literature the recommended value is $k=10$. We we do a simple 10-fold cross-validation to keep running times small.
+
+
+### Cross-validation
+
+First we select the resampling strategy.
+
+```{r}
+# resample = mlr_resamplings$get("cv")  # rsmp
+resample = rsmp("cv")  # rsmp("cv", folds = 10)
+resample
+```
+
+As learner, let's take this time the classical CART algorithm for classification.
+
+```{r}
+learner <- lrn("classif.rpart")
+learner
+```
+
+We will start one learning round and look at the decision tree model, without using and testing data. Instead of printing the model, let's look at the graphical layout of the decision tree.
+```{r}
+learner$train(task)
+plot(learner$model)
+text(learner$model)
+```
+
+To see the the importance of different variables (for this model), call the 'importance' method on this learner.
+```{r}
+learner$importance()
+```
+
+Now we apply the resampling procedure to get a better estimate of the accuracy. No need to define training and testing data, resampling will do this for us.
+```{r}
+result = resample(task = task, learner, resample)
+```
+
+```{r}
+result$score(msr("classif.acc"))
+```
+
+```{r}
+# result$aggregate()
+round(result$aggregate(msrs(c("classif.acc", "classif.ce"))), 2)
+```

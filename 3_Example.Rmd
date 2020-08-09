@@ -1,0 +1,168 @@
+---
+title: "*mlr3* 'glass data' Example"
+author: "Hans W. Borchers"
+date: "July 2020"
+output:
+  html_document:
+    css: "mlr3.css"
+    keep_md: true
+    toc: true
+    toc_float:
+      collapsed: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+*Remark*: Loading *mlr3* alone will lead to an error, because the learners are not available. A simple solution is to load *mlr3verse* which will load all necessary basic packages of the 'mlr3' family.
+
+```{r echo=TRUE}
+library(mlr3verse, quietly = TRUE)
+```
+
+
+## The 'glass' dataset
+
+```{r}
+Glass <- RWeka::read.arff("glass.arff")
+str(Glass)
+```
+
+```{r}
+barplot(table(Glass$Type))
+grid()
+```
+
+## Define a task
+
+First, we have to set up a 'task'. An *mlr3* classification task is given by a name, a data frame, and a nominal, i.e. factor, attribute of the data.
+
+'mlr3' also provides some examples tasks, all known from the many introductions to Machine learning.
+```{r}
+as.data.table(mlr_tasks)
+# mlr_tasks
+```
+
+These tasks can be used to learn and test the functionalities available in 'mlr3'. We can add our own task, classifying the attribute 'Type' in the Glass data.
+
+```{r}
+mytask <- TaskClassif$new(id = "glass",
+                          backend = Glass, target = "Type")
+mytask
+```
+
+
+## Define a learner
+
+### Naive Bayes
+
+Next, we decide upon a learner for the task, in this case a classification learner, for instance logistic regression, naive Bayes, a decision tree or random forest, etc.
+
+Logistic regression, provided in the *stats* package and available in *mlr3learners* as `classif.log_reg`, is a two-class learner, but our problem is multi-class. We will try one of the simpler learners, 'naive Bayes' from the *e1071* package (This package needs to be installed before.)
+
+```{r}
+learner_nb <- lrn("classif.naive_bayes")
+learner_nb
+```
+
+
+### Learning
+
+To generate a fitted model the learner needs to be trained on some data. We split the data set into training and testing data, selecting 10% of the data as test data, the rest is used for training.
+
+```{r}
+n <- nrow(Glass)
+itest  <- sample(1:n, 20)
+itrain <- setdiff(1:n, itest)
+```
+
+Now we can train the model with the training data and display the learned model.
+
+```{r}
+learner_nb$train(mytask, row_ids = itrain)
+# learner_nb$model
+```
+
+The output will depend on the learner, actually it simply displays what the chosen learner returns.
+
+
+### Prediction
+
+Predicting the class of new data is done through a call to `learner$predict_newdata()`. To determine the accuracy, it is better to call `learner$predict()`, as this also returns the class of the test data in the original data.
+
+```{r}
+predicts <- learner_nb$predict(mytask, row_ids = itest)
+predicts
+```
+
+It is possible to generate prediction probabilities. We need to tell the learner to include those probobilities.
+
+```r
+mylearner <- lrn("classif.naive_bayes", predict_type = "prob")  # "response"
+mylearner$train(mytask, row_ids = itrain)
+predicts <- mylearner$predict_newdata(Glass[itest, 1:10])
+predicts
+```
+
+TODO: Find out how to make this work correctly.
+
+
+### Accuracy
+
+From these predictions we can derive the accuracy with `msr()` resp. `msrs(c(...))`.
+
+```{r}
+a <- predicts$score(msrs(c("classif.acc", "classif.ce")))
+a
+```
+
+All possible accuracy measures will be displayed with
+```{r}
+# as.data.table(mlr_measures)
+mlr_measures
+```
+
+
+The confusion matrix is returned from
+
+```{r}
+confusion_matrix <- predicts$confusion
+print(confusion_matrix)
+```
+
+Obviously, 'naive Bayes' does not a good job in learning this task. We need something better.
+
+
+## Random Forest
+
+We can repeat the computation with a Random Forest learner such as provided in the *ranger* package by simply replacing the learner option "classif.naive_bayes" with "classif.ranger".
+
+To keep it readable, we repeat all necessary commands. The dataset is the 'glass' dataset as above; the task stays the same. As our data set is not big, the number of subtrees generated should be not greater than 50 (the default is 500). Such arguments are handed over unchanged to the learner function.
+
+```{r}
+# Fix the appropriate Random Forrest learner
+learner_rf <- lrn("classif.rpart")  #, num.trees = 50L)
+
+# Start the learner and display the model
+learner_rf$train(mytask, row_ids = itrain)
+learner_rf$model
+
+# Predict classification on the test set
+predicts <- learner_rf$predict(mytask, row_ids = itest)
+
+# Determine the accuracy on the test set
+predicts$score(msrs(c("classif.acc", "classif.ce")))
+```
+
+The accuracy is 80% for Random Forrest while it was less than 40 % for 'naive Bayes'.
+
+Of course, calculating the accuracy from one test set is not correct, we need a more reliable approach.
+
+Another score could be the time for training. In our example it is too small to be measured through this approach.
+
+```{r}
+predicts$score(msr("time_train"))
+```
+
+lerner_rf$importance()

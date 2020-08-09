@@ -1,0 +1,80 @@
+---
+title: "Preparing Data with mlr3"
+author: "Hans W. Borchers"
+date: "July 2020"
+output:
+  html_document:
+    css: "mlr3.css"
+    keep_md: true
+    toc: true
+    toc_float:
+      collapsed: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r echo=FALSE}
+library(mlr3verse, quietly = TRUE)
+```
+
+
+## The Task and the Data
+
+Again we define our data and task as 
+```{r}
+Glass <- RWeka::read.arff("glass.arff")
+mytask <- TaskClassif$new(id = "glass",
+                          backend = Glass, target = "Type")
+```
+
+'mlr3' allows for inspecting, changing, and visualizing the task and especially the data through commands.
+```{r}
+mytask$nrow; mytask$ncol  # dim(Glass)
+mytask$feature_names; mytask$target_names
+```
+
+We can display the data or a part of it,
+```{r}
+mytask$data()  # rows=c(1:10); cols=c("Type", "Al", "Ba")
+```
+
+or show a summary of the data.
+```{r}
+summary(as.data.table(mytask))
+```
+
+
+## Selecting and Filtering
+
+We can select (or filter) the data, even with the intention to define a new task to work on. But be carefull: These operations will change the data internally, therefore before doing so we will copy the task object.
+```{r}
+mytask_copy <- mytask$clone()
+
+mytask$select(c("Al", "Ba"))  # "Type" not possible
+mytask
+
+mytask$filter(c(1:5))
+mytask
+```
+
+Note that this changes the original task (in place?), as can be seen from the much reduced sizes.
+
+We can also look at the 'backend' (of the original data).
+```{r}
+mytask_copy$backend
+```
+
+We can also extend the data with the `cbind` and `rbind` methods, adding columns or rows to it.
+
+Selecting or filtering will not copy the data, not even internally. Instead the ste of current indices for valid rows and columns is manipulated.
+
+
+## Plotting Data and Tasks
+
+There are several plotting functions associated with 'mlr3', the simplest one is `autoplot`. We plot the copy from above to get a picture of the full set.
+```{r}
+autoplot(mytask_copy)
+```
+

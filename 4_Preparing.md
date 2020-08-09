@@ -1,3 +1,21 @@
+---
+title: "Preparing Data with mlr3"
+author: "Hans W. Borchers"
+date: "July 2020"
+output:
+  html_document:
+    css: "mlr3.css"
+    keep_md: true
+    toc: true
+    toc_float:
+      collapsed: false
+---
+
+
+
+
+
+
 ## The Task and the Data
 
 Again we define our data and task as 
@@ -91,9 +109,11 @@ summary(as.data.table(mytask))
 
 ## Selecting and Filtering
 
-We can select (or filter) the data, even with the intention to define a new task to work on.
+We can select (or filter) the data, even with the intention to define a new task to work on. But be carefull: These operations will change the data internally, therefore before doing so we will copy the task object.
 
 ```r
+mytask_copy <- mytask$clone()
+
 mytask$select(c("Al", "Ba"))  # "Type" not possible
 mytask
 ```
@@ -119,15 +139,45 @@ mytask
 ##   - dbl (2): Al, Ba
 ```
 
-Note that this changes the original task (in place?).
+Note that this changes the original task (in place?), as can be seen from the much reduced sizes.
+
+We can also look at the 'backend' (of the original data).
+
+```r
+mytask_copy$backend
+```
+
+```
+## <DataBackendDataTable> (214x11)
+##       RI    Na   Mg   Al    Si    K    Ca   Ba   Fe                 Type
+##  1.51793 12.79 3.50 1.12 73.03 0.64  8.77 0.00 0.00     build wind float
+##  1.51643 12.16 3.52 1.35 72.89 0.57  8.53 0.00 0.00     vehic wind float
+##  1.51793 13.21 3.48 1.41 72.64 0.59  8.43 0.00 0.00     build wind float
+##  1.51299 14.40 1.74 1.54 74.55 0.00  7.59 0.00 0.00            tableware
+##  1.53393 12.30 0.00 1.00 70.16 0.12 16.19 0.00 0.24 build wind non-float
+##  1.51655 12.75 2.85 1.44 73.27 0.57  8.79 0.11 0.22 build wind non-float
+##  ..row_id
+##         1
+##         2
+##         3
+##         4
+##         5
+##         6
+## [...] (208 rows omitted)
+```
 
 We can also extend the data with the `cbind` and `rbind` methods, adding columns or rows to it.
+
+Selecting or filtering will not copy the data, not even internally. Instead the ste of current indices for valid rows and columns is manipulated.
 
 
 ## Plotting Data and Tasks
 
-There are several plotting functions associated with 'mlr3', the simplest one is `autoplot`:
+There are several plotting functions associated with 'mlr3', the simplest one is `autoplot`. We plot the copy from above to get a picture of the full set.
 
 ```r
-autoplot(mytask)
+autoplot(mytask_copy)
 ```
+
+![](4_Preparing_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
+

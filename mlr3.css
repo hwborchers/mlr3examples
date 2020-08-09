@@ -1,0 +1,10 @@
+body {
+  font-family: Geneva;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #000;
+}
+blockquote {
+  font-size: 14px;
+  font-style: italic;
+}

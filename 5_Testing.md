@@ -1,3 +1,20 @@
+---
+title: "Testing and Resampling"
+author: "Hans W. Borchers"
+date: "July 2020"
+output:
+  html_document:
+    css: "mlr3.css"
+    keep_md: true
+    toc: true
+    toc_float:
+      collapsed: false
+---
+
+
+
+
+
 ## Data
 
 We will look at how the 'mlr3' package family supports testing of learners. We will use the same data as before.
@@ -80,22 +97,46 @@ learner
 ##   twoclass, weights
 ```
 
+We will start one learning round and look at the decision tree model, without using and testing data. Instead of printing the model, let's look at the graphical layout of the decision tree.
+
+```r
+learner$train(task)
+plot(learner$model)
+text(learner$model)
+```
+
+![](5_Testing_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
+
+To see the the importance of different variables (for this model), call the 'importance' method on this learner.
+
+```r
+learner$importance()
+```
+
+```
+##        Mg        Al        Ca        Ba        RI        Na         K        Si 
+## 33.975811 33.389985 29.658069 26.419293 24.429294 16.772297 15.679502  8.768083 
+##        Fe 
+##  3.743814
+```
+
+Now we apply the resampling procedure to get a better estimate of the accuracy. No need to define training and testing data, resampling will do this for us.
 
 ```r
 result = resample(task = task, learner, resample)
 ```
 
 ```
-## INFO  [21:42:12.449] Applying learner 'classif.rpart' on task 'glass' (iter 6/10) 
-## INFO  [21:42:12.512] Applying learner 'classif.rpart' on task 'glass' (iter 4/10) 
-## INFO  [21:42:12.538] Applying learner 'classif.rpart' on task 'glass' (iter 1/10) 
-## INFO  [21:42:12.560] Applying learner 'classif.rpart' on task 'glass' (iter 10/10) 
-## INFO  [21:42:12.578] Applying learner 'classif.rpart' on task 'glass' (iter 2/10) 
-## INFO  [21:42:12.595] Applying learner 'classif.rpart' on task 'glass' (iter 3/10) 
-## INFO  [21:42:12.616] Applying learner 'classif.rpart' on task 'glass' (iter 9/10) 
-## INFO  [21:42:12.642] Applying learner 'classif.rpart' on task 'glass' (iter 7/10) 
-## INFO  [21:42:12.660] Applying learner 'classif.rpart' on task 'glass' (iter 8/10) 
-## INFO  [21:42:12.677] Applying learner 'classif.rpart' on task 'glass' (iter 5/10)
+## INFO  [16:17:03.716] Applying learner 'classif.rpart' on task 'glass' (iter 6/10) 
+## INFO  [16:17:03.784] Applying learner 'classif.rpart' on task 'glass' (iter 10/10) 
+## INFO  [16:17:03.831] Applying learner 'classif.rpart' on task 'glass' (iter 3/10) 
+## INFO  [16:17:03.894] Applying learner 'classif.rpart' on task 'glass' (iter 1/10) 
+## INFO  [16:17:03.997] Applying learner 'classif.rpart' on task 'glass' (iter 9/10) 
+## INFO  [16:17:04.098] Applying learner 'classif.rpart' on task 'glass' (iter 2/10) 
+## INFO  [16:17:04.148] Applying learner 'classif.rpart' on task 'glass' (iter 4/10) 
+## INFO  [16:17:04.191] Applying learner 'classif.rpart' on task 'glass' (iter 8/10) 
+## INFO  [16:17:04.231] Applying learner 'classif.rpart' on task 'glass' (iter 7/10) 
+## INFO  [16:17:04.277] Applying learner 'classif.rpart' on task 'glass' (iter 5/10)
 ```
 
 
@@ -116,15 +157,15 @@ result$score(msr("classif.acc"))
 ##  9: <TaskClassif>   glass <LearnerClassifRpart> classif.rpart <ResamplingCV>
 ## 10: <TaskClassif>   glass <LearnerClassifRpart> classif.rpart <ResamplingCV>
 ##     resampling_id iteration prediction classif.acc
-##  1:            cv         1     <list>   0.7272727
-##  2:            cv         2     <list>   0.7272727
-##  3:            cv         3     <list>   0.7272727
-##  4:            cv         4     <list>   0.5909091
-##  5:            cv         5     <list>   0.6666667
+##  1:            cv         1     <list>   0.7727273
+##  2:            cv         2     <list>   0.6818182
+##  3:            cv         3     <list>   0.6363636
+##  4:            cv         4     <list>   0.4545455
+##  5:            cv         5     <list>   0.5714286
 ##  6:            cv         6     <list>   0.6666667
-##  7:            cv         7     <list>   0.7619048
-##  8:            cv         8     <list>   0.6666667
-##  9:            cv         9     <list>   0.9047619
+##  7:            cv         7     <list>   0.8571429
+##  8:            cv         8     <list>   0.7142857
+##  9:            cv         9     <list>   0.7619048
 ## 10:            cv        10     <list>   0.6666667
 ```
 
@@ -136,5 +177,5 @@ round(result$aggregate(msrs(c("classif.acc", "classif.ce"))), 2)
 
 ```
 ## classif.acc  classif.ce 
-##        0.71        0.29
+##        0.68        0.32
 ```
