@@ -20,3 +20,5 @@ it to example data, what else is needed, etc.
 * [4. Preparing](http://htmlpreview.github.io/?https://github.com/hwborchers/mlr3examples/blob/master/4_Preparing.html)
 * [5. Testing](http://htmlpreview.github.io/?https://github.com/hwborchers/mlr3examples/blob/master/5_Testing.html)
 * [6. Tuning](http://htmlpreview.github.io/?https://github.com/hwborchers/mlr3examples/blob/master/6_Tuning.html)
+* 7. Pipelining
+* 8. Visualizations
