@@ -1,4 +1,4 @@
-Details
+## Details
 
 These are the results of online meetings of the Meetup group
 "R User Group Rhein-Neckar" about the 'mlr3' package for "Machine
@@ -12,4 +12,4 @@ Topics of discussion were how 'mlr3' does support different aspects
 of Machine Learning; how can 'mlr3' be used, pros and cons, applying
 it to example data, what else is needed, etc.
 
-Presentations:
+## Presentations:
