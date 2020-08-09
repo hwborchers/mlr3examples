@@ -1,8 +1,8 @@
 Details
 
-These are the results of three online meetings of the Meetup group
+These are the results of online meetings of the Meetup group
 "R User Group Rhein-Neckar" about the 'mlr3' package for "Machine
-Learning with R" of three meetings in July and August 2020.
+Learning with R" that took place in July and August 2020.
 
 * July 14, 19:00-19:40 -- Introducing 'mlr3'; first steps; example
 * July 28, 19:00-19:40 -- Resampling, data preparation, benchmarking
