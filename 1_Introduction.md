@@ -15,6 +15,8 @@ output:
 
 ## Resources
 
+### *mlr3* Documentation
+
 * Package website: https://mlr3.mlr-org.com
 * Github repository: https://github.com/mlr-org/mlr3
 * Bookdown page: https://mlr3book.mlr-org.com
@@ -24,6 +26,11 @@ output:
 * Blog posts: https://mlr-org.com/
 * Cheat sheets: https://cheatsheets.mlr-org.com/
 * Reference Manual: https://mlr3.mlr-org.com/reference/
+
+### Courses
+
+* [Michel Lang: Talk Machine Learning](https://www.youtube.com/watch?v=wsP2hiFnDQs)
+* [Introduction to Machine Learning](https://compstat-lmu.github.io/lecture_i2ml/) (I2ML)
 
 
 ## Summary
@@ -57,7 +64,9 @@ Package *mlr3* is a rewrite of the former package and framework *mlr*. The summa
     mlr3db          Database backend
 
 
-## Installing *mlr3*
+## Getting *mlr3*
+
+### Installing *mlr3*
 
 Install the official release from CRAN
 ```r
@@ -76,7 +85,7 @@ install.packages("mlr3verse")
 ```
 
 
-## Loading *mlr3*
+### Loading *mlr3*
 
 Of course, *mlr3* can be loaded with the usual `library("mlr3")` command, but it makes sense to use the more encompassing
 ```r

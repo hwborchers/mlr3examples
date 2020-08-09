@@ -40,7 +40,7 @@ str(Glass)
 ##  $ Ca  : num  8.77 8.53 8.43 7.59 16.19 ...
 ##  $ Ba  : num  0 0 0 0 0 0.11 0 0 0.61 0 ...
 ##  $ Fe  : num  0 0 0 0 0.24 0.22 0 0 0.05 0.28 ...
-##  $ Type: Factor w/ 7 levels "build wind float",..: 1 3 1 6 2 2 3 1 7 2 ...
+##  $ Type: Factor w/ 6 levels "build wind float",..: 1 3 1 5 2 2 3 1 6 2 ...
 ```
 
 
@@ -64,7 +64,7 @@ as.data.table(mlr_tasks)
 ```
 ##               key task_type nrow ncol lgl int dbl chr fct ord pxc
 ## 1: boston_housing      regr  506   19   0   3  13   0   2   0   0
-## 2:  german_credit   classif 1000   21   0   0   7   0  12   1   0
+## 2:  german_credit   classif 1000   21   0   3   0   0  14   3   0
 ## 3:           iris   classif  150    5   0   0   4   0   0   0   0
 ## 4:         mtcars      regr   32   11   0   0  10   0   0   0   0
 ## 5:           pima   classif  768    9   0   0   8   0   0   0   0
@@ -157,12 +157,12 @@ predicts
 ## <PredictionClassif> for 20 observations:
 ##     row_id                truth         response
 ##         89     build wind float build wind float
-##        152     build wind float        tableware
-##        154 build wind non-float build wind float
+##        155     vehic wind float build wind float
+##         86 build wind non-float build wind float
 ## ---                                             
-##         40 build wind non-float        tableware
-##         42 build wind non-float build wind float
-##         34 build wind non-float vehic wind float
+##         52 build wind non-float build wind float
+##         91            headlamps        tableware
+##          5 build wind non-float       containers
 ```
 
 It is possible to generate prediction probabilities. We need to tell the learner to include those probobilities.
@@ -189,7 +189,7 @@ a
 
 ```
 ## classif.acc  classif.ce 
-##        0.25        0.75
+##         0.3         0.7
 ```
 
 All possible accuracy measures will be displayed with
@@ -226,22 +226,20 @@ print(confusion_matrix)
 ```
 ##                       truth
 ## response               build wind float build wind non-float vehic wind float
-##   build wind float                    4                    5                1
-##   build wind non-float                2                    0                0
-##   vehic wind float                    3                    1                0
-##   vehic wind non-float                0                    0                0
-##   containers                          0                    0                0
-##   tableware                           1                    1                0
+##   build wind float                    3                    6                1
+##   build wind non-float                1                    2                0
+##   vehic wind float                    2                    1                1
+##   containers                          0                    2                0
+##   tableware                           0                    0                0
 ##   headlamps                           0                    0                0
 ##                       truth
-## response               vehic wind non-float containers tableware headlamps
-##   build wind float                        0          0         0         0
-##   build wind non-float                    0          1         0         0
-##   vehic wind float                        0          0         0         0
-##   vehic wind non-float                    0          0         0         0
-##   containers                              0          0         0         0
-##   tableware                               0          0         0         0
-##   headlamps                               0          0         0         1
+## response               containers tableware headlamps
+##   build wind float              0         0         0
+##   build wind non-float          0         0         0
+##   vehic wind float              0         0         0
+##   containers                    0         0         0
+##   tableware                     0         0         1
+##   headlamps                     0         0         0
 ```
 
 Obviously, 'naive Bayes' does not a good job in learning this task. We need something better.
@@ -260,14 +258,6 @@ learner_rf <- lrn("classif.ranger", num.trees = 50L)
 
 # Start the learner and display the model
 learner_rf$train(mytask, row_ids = itrain)
-```
-
-```
-## Warning: Dropped unused factor level(s) in dependent variable: vehic wind non-
-## float.
-```
-
-```r
 learner_rf$model
 ```
 
@@ -285,7 +275,7 @@ learner_rf$model
 ## Target node size:                 1 
 ## Variable importance mode:         none 
 ## Splitrule:                        gini 
-## OOB prediction error:             22.16 %
+## OOB prediction error:             21.13 %
 ```
 
 ```r
@@ -298,7 +288,7 @@ predicts$score(msrs(c("classif.acc", "classif.ce")))
 
 ```
 ## classif.acc  classif.ce 
-##         0.7         0.3
+##        0.75        0.25
 ```
 
 The accuracy is 80% for Random Forrest while it was less than 40 % for 'naive Bayes'.
@@ -317,3 +307,73 @@ predicts$score(msr("time_train"))
 ##          0
 ```
 
+```r
+# learner_rf$importance()
+```
+
+
+## CART
+
+We repeat this task again, this time with Breiman's CART algorithm. The model will be displayed as graphical output.
+
+```r
+# CART learner
+learner_cart <- lrn("classif.rpart")
+
+# Start the learner and display the model
+learner_cart$train(mytask, row_ids = itrain)
+plot(learner_cart$model)
+text(learner_cart$model)
+```
+
+![](3_Example_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
+
+On to prediction and accuracy.
+
+```r
+# Predict classification on the test set
+predicts <- learner_cart$predict(mytask, row_ids = itest)
+
+# Determine the accuracy on the test set
+predicts$score(msrs(c("classif.acc", "classif.ce")))
+```
+
+```
+## classif.acc  classif.ce 
+##         0.7         0.3
+```
+
+Because the learner supports the feature of variable imortance, we can display the importance ranking for attributes (valid only for this learner).
+
+
+```r
+predicts$score(msr("time_train"))
+```
+
+```
+## time_train 
+##          0
+```
+
+```r
+proportions(learner_cart$importance())
+```
+
+```
+##         Mg         Al         Ba         Ca         RI         Na          K 
+## 0.18245126 0.16275291 0.15572316 0.15135204 0.12956475 0.07629396 0.06514364 
+##         Si         Fe 
+## 0.04737776 0.02934052
+```
+
+
+### Autoplotting predictions
+
+The `autoplot` function will display a plot of the predictions.
+
+```r
+prediction = learner_cart$predict(mytask)
+autoplot(prediction)
+```
+
+![](3_Example_files/figure-html/unnamed-chunk-18-1.png)<!-- -->

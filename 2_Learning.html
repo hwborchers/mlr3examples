@@ -1563,9 +1563,8 @@ mlr_learners</code></pre>
 ##   regr.ranger, regr.rpart, regr.svm, regr.xgboost</code></pre>
 <p>An overview of the available learners can also be found on the <a href="https://mlr3learners.mlr-org.com/" class="uri">https://mlr3learners.mlr-org.com/</a> page.</p>
 <p>On this page, there is also a link to a list of “Learner Extension Packages”. The additional packages have to be installed by the user.</p>
-</div>
-<div id="classification-learners" class="section level2">
-<h2>Classification learners</h2>
+<div id="classification-learners" class="section level3">
+<h3>Classification learners</h3>
 <pre><code>classif.cv_glmnet    Penalized Logistic Regression    glmnet
 classif.glmnet       Penalized Logistic Regression    glmnet
 classif.kknn         k-Nearest Neighbors              kknn
@@ -1578,8 +1577,8 @@ classif.ranger       Random Forest                    ranger
 classif.svm          SVM                              e1071
 classif.xgboost      Gradient Boosting                xgboost</code></pre>
 </div>
-<div id="regression-learners" class="section level2">
-<h2>Regression learners</h2>
+<div id="regression-learners" class="section level3">
+<h3>Regression learners</h3>
 <pre><code>regr.cv_glmnet       Penalized Linear Regression      glmnet
 regr.glmnet          Penalized Linear Regression      glmnet
 regr.kknn            k-Nearest Neighbors              kknn
@@ -1589,8 +1588,59 @@ regr.ranger          Random Forest                    ranger
 regr.svm             SVM                              e1071
 regr.xgboost         Gradient Boosting                xgboost</code></pre>
 </div>
+</div>
+<div id="parameter-sets" class="section level2">
+<h2>Parameter sets</h2>
+<p>All learners have different sets of parameters. To see the parameters for a specific learner, generate this learner and display its parameter set, for example the “nearest neighbor” learner in the <em>kknn</em> package (which needs to be installed).</p>
+<pre class="r"><code># learner_kknn = mlr_learners$get(&quot;regr.kknn&quot;)
+learner_kknn = lrn(&quot;regr.kknn&quot;)
+print(learner_kknn)</code></pre>
+<pre><code>## &lt;LearnerRegrKKNN:regr.kknn&gt;
+## * Model: -
+## * Parameters: list()
+## * Packages: kknn
+## * Predict Type: response
+## * Feature types: logical, integer, numeric, factor, ordered
+## * Properties: -</code></pre>
+<p>Its parameter set is</p>
+<pre class="r"><code>learner_kknn$param_set</code></pre>
+<pre><code>## &lt;ParamSet&gt;
+##          id    class lower upper
+## 1:        k ParamInt     1   Inf
+## 2: distance ParamDbl     0   Inf
+## 3:   kernel ParamFct    NA    NA
+## 4:    scale ParamLgl    NA    NA
+## 5:  ykernel ParamUty    NA    NA
+##                                                            levels default value
+## 1:                                                                      7      
+## 2:                                                                      2      
+## 3: rectangular,triangular,epanechnikov,biweight,triweight,cos,... optimal      
+## 4:                                                     TRUE,FALSE    TRUE      
+## 5:</code></pre>
+<p>and can be changed with</p>
+<pre class="r"><code>learner_kknn$param_set$values = list(k = 3)
+learner_kknn$param_set$values$k</code></pre>
+<pre><code>## [1] 3</code></pre>
+<p>A more direct approach would be</p>
+<pre class="r"><code>learner_knn = lrn(&quot;regr.kknn&quot;, k = 3)</code></pre>
+</div>
 <div id="additional-learners" class="section level2">
 <h2>Additional Learners</h2>
+<p><em>mlr3</em> can be extended by learners that are not predefined, see the <a href="https://mlr3learners.mlr-org.com">mlr3learners</a> page. We are interested to apply the C5.0 decision tree algorithm to our data.</p>
+<pre class="r"><code># remotes::install_github(&quot;mlr3learners/mlr3learners.c50&quot;,
+#                          force = TRUE)
+library(mlr3learners.c50)</code></pre>
+<p>Then a C5.0 learner can be defined with</p>
+<pre class="r"><code>learner_c50 = lrn(&quot;classif.C5.0&quot;)
+learner_c50</code></pre>
+<pre><code>## &lt;LearnerClassifC5.0:classif.C5.0&gt;
+## * Model: -
+## * Parameters: list()
+## * Packages: C50
+## * Predict Type: response
+## * Feature types: numeric, factor, ordered
+## * Properties: missings, multiclass, twoclass, weights</code></pre>
+<p>and its parameter set contains quite a lot of options.</p>
 <p>TODO: As an example, load the C4.5 algorithm and apply to the data.</p>
 </div>
 

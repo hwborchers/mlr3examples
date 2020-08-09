@@ -142,7 +142,7 @@ To keep it readable, we repeat all necessary commands. The dataset is the 'glass
 
 ```{r}
 # Fix the appropriate Random Forrest learner
-learner_rf <- lrn("classif.rpart")  #, num.trees = 50L)
+learner_rf <- lrn("classif.ranger", num.trees = 50L)
 
 # Start the learner and display the model
 learner_rf$train(mytask, row_ids = itrain)
@@ -163,6 +163,44 @@ Another score could be the time for training. In our example it is too small to 
 
 ```{r}
 predicts$score(msr("time_train"))
+# learner_rf$importance()
 ```
 
-lerner_rf$importance()
+
+## CART
+
+We repeat this task again, this time with Breiman's CART algorithm. The model will be displayed as graphical output.
+```{r}
+# CART learner
+learner_cart <- lrn("classif.rpart")
+
+# Start the learner and display the model
+learner_cart$train(mytask, row_ids = itrain)
+plot(learner_cart$model)
+text(learner_cart$model)
+```
+
+On to prediction and accuracy.
+```{r}
+# Predict classification on the test set
+predicts <- learner_cart$predict(mytask, row_ids = itest)
+
+# Determine the accuracy on the test set
+predicts$score(msrs(c("classif.acc", "classif.ce")))
+```
+
+Because the learner supports the feature of variable imortance, we can display the importance ranking for attributes (valid only for this learner).
+
+```{r}
+predicts$score(msr("time_train"))
+proportions(learner_cart$importance())
+```
+
+
+### Autoplotting predictions
+
+The `autoplot` function will display a plot of the predictions.
+```{r}
+prediction = learner_cart$predict(mytask)
+autoplot(prediction)
+```

@@ -1,5 +1,5 @@
 ---
-title: "Testing and Resampling"
+title: "Resampling and Benchmarking"
 author: "Hans W. Borchers"
 date: "July 2020"
 output:
@@ -17,6 +17,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r echo=FALSE}
 library(mlr3verse, quietly = TRUE)
+library(mlr3learners.c50)
 ```
 
 ## Data
@@ -29,8 +30,8 @@ dim(Glass)
 
 The task, as defined before, will also be needed.
 ```{r}
-task <- TaskClassif$new(id = "glass",
-                        backend = Glass, target = "Type")
+mytask <- TaskClassif$new(id = "glass",
+                          backend = Glass, target = "Type")
 ```
 
 
@@ -47,9 +48,9 @@ as.data.table(mlr_resamplings)
 We will try out the k-fold cross-validation, here given as "cv", doing it k times (with $k^2 models to generate). In the literature the recommended value is $k=10$. We we do a simple 10-fold cross-validation to keep running times small.
 
 
-### Cross-validation
+### Resampling strategy
 
-First we select the resampling strategy.
+First we select the resampling strategy as "cross validation". The default is *ten-fold* and can be changed with the `folds` argument. The drawback is that other resampling methods will have different option arguments. 
 
 ```{r}
 # resample = mlr_resamplings$get("cv")  # rsmp
@@ -57,35 +58,59 @@ resample = rsmp("cv")  # rsmp("cv", folds = 10)
 resample
 ```
 
-As learner, let's take this time the classical CART algorithm for classification.
+As learner, let's again take the classical CART algorithm for classification.
 
 ```{r}
-learner <- lrn("classif.rpart")
-learner
+learner_cart <- lrn("classif.rpart")
+# learner_cart
 ```
 
-We will start one learning round and look at the decision tree model, without using and testing data. Instead of printing the model, let's look at the graphical layout of the decision tree.
-```{r}
-learner$train(task)
-plot(learner$model)
-text(learner$model)
-```
 
-To see the the importance of different variables (for this model), call the 'importance' method on this learner.
-```{r}
-learner$importance()
-```
+### Cross validation
 
 Now we apply the resampling procedure to get a better estimate of the accuracy. No need to define training and testing data, resampling will do this for us.
 ```{r}
-result = resample(task = task, learner, resample)
+rresult = resample(task = mytask, learner_cart, resample)
 ```
 
 ```{r}
-result$score(msr("classif.acc"))
+rresult$score(msr("classif.acc"))
 ```
 
 ```{r}
 # result$aggregate()
-round(result$aggregate(msrs(c("classif.acc", "classif.ce"))), 2)
+round(rresult$aggregate(msrs(c("classif.acc", "classif.ce"))), 2)
+```
+
+
+## Benchmarking
+
+Create a benchmark design:
+```{r}
+design = benchmark_grid(
+  tasks = mytask,
+  learners = list(lrn("classif.rpart"), lrn("classif.ranger"),
+                  lrn("classif.C5.0"), lrn("classif.kknn")),
+  resamplings = rsmp("cv", folds = 5)
+)
+print(design)
+```
+
+Start the benchmarking process:
+```{r}
+bmark = benchmark(design)
+```
+
+Define a list of measures and then aggregate the measures:
+```{r}
+measures = list(msr("classif.acc"), msr("time_train"))
+bmark$aggregate(measures)
+```
+
+## Extending the example
+
+```r
+learners = c("classif.featureless", "classif.rpart", "classif.ranger", "classif.kknn")
+learners = lapply(learners, lrn,
+  predict_type = "prob", predict_sets = c("train", "test"))
 ```

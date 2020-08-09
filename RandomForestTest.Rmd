@@ -1,0 +1,60 @@
+---
+title: "Random Forest Test (w/ glass data)"
+author: "Hans W Borchers"
+date: "August 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(randomForest)
+```
+
+```{r}
+Glass <- RWeka::read.arff("glass.arff")
+str(Glass)
+```
+
+```{r}
+ntree = 500
+glass_rf <- randomForest(Glass[,-10], Glass[,10], ntree = ntree,
+                         importance = TRUE, proximity=TRUE)
+cat("Accuracy:", 1.0 - glass_rf$err.rate[ntree, "OOB"], '\n')
+```
+
+```{r}
+plot(glass_rf$err.rate[, "OOB"], ty='l', col="blue")
+grid()
+```
+
+```{r}
+glass_rf$importance
+```
+
+```{r}
+varImpPlot(glass_rf)
+```
+
+
+```{r}
+outlier(glass_rf)
+plot(outlier(glass_rf), type="h")
+
+```
+
+```{r}
+MDSplot(glass_rf, Glass$Type)
+```
+
+```{r}
+plot(glass_rf)
+```
+
+```{r}
+tuneRF(Glass[,-10], Glass[,10],
+       trace = FALSE)
+```
+
