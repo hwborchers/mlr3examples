@@ -19,3 +19,4 @@ it to example data, what else is needed, etc.
 * [3. Example](http://htmlpreview.github.io/?https://github.com/hwborchers/mlr3examples/blob/master/3_Example.html)
 * [4. Preparing](http://htmlpreview.github.io/?https://github.com/hwborchers/mlr3examples/blob/master/4_Preparing.html)
 * [5. Testing](http://htmlpreview.github.io/?https://github.com/hwborchers/mlr3examples/blob/master/5_Testing.html)
+* [6. Tuning](http://htmlpreview.github.io/?https://github.com/hwborchers/mlr3examples/blob/master/6_Tuning.html)
